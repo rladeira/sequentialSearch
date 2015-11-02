@@ -34,8 +34,7 @@ sequentialFloatingSearch <-
     traceIndex <- 1
 
     initialAttrSubset <- attributes[as.logical(currentAttrEncoding)]
-    bestScoreSoFar <- evaluationFunction(
-      initialAttrSubset, currentAttrEncoding, ...)
+    bestScoreSoFar <- evaluationFunction(initialAttrSubset, ...)
 
     while(TRUE) {
 
@@ -108,6 +107,8 @@ sequentialFloatingSearch <-
       bestScoreSoFar <- exclusionStepResult$bestScore
       currentAttrEncoding <- exclusionStepResult$nextAttrEncoding
     }
+
+    stop("Should never reach this line...")
   }
 
 createSequentialSearchStepFunc <-

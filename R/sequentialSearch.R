@@ -23,8 +23,7 @@ sequentialSearch <-
     traceIndex <- 1
 
     initialAttrSubset <- attributes[as.logical(currentAttrEncoding)]
-    bestScoreSoFar <- evaluationFunction(
-      initialAttrSubset, currentAttrEncoding, ...)
+    bestScoreSoFar <- evaluationFunction(initialAttrSubset, ...)
 
     while (TRUE) {
 

@@ -41,7 +41,7 @@ sequentialFloatingSearch <-
       if (verbose)
         message("Iteration: ", iteration,
                 "\n             Inclusion Step ",
-                " | Initial Encoding: ", paste(currentAttrEncoding, collapse = ""),
+                " | Start Encoding: ", paste(currentAttrEncoding, collapse = ""),
                 " | Optimization Value: ", bestScoreSoFar)
       
       trace[[traceIndex]] <-
@@ -77,7 +77,7 @@ sequentialFloatingSearch <-
       
       if (verbose)
         message(" Conditional Exclusion Step ",
-                " | Initial Encoding: ", paste(currentAttrEncoding, collapse = ""),
+                " | Start Encoding: ", paste(currentAttrEncoding, collapse = ""),
                 " | Optimization Value: ", bestScoreSoFar,
                 "\n-----------------------------------------------------------------------------")
       

@@ -64,3 +64,18 @@ test_that("SBE behaves as expected 3", {
   expect_true(length(result$solution) == expectedSolutionSize)
 })
 
+test_that("SBE behaves as expected with no execution trace.", {
+
+  dummyEvaluation <- function(attrEncoding, ...) {
+    return(length(attrEncoding))
+  }
+
+  data <- iris[, -5]
+  attributes <- colnames(data)
+
+  solution <- SBE(attributes = attributes,
+                  evaluationFunction = dummyEvaluation,
+                  traceExecution = FALSE)
+
+  expect_true(all.equal(solution, attributes))
+})

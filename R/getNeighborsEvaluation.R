@@ -1,15 +1,17 @@
 
-getNeighborsEvaluation <- 
-  function(neighbors, evaluationFunction, ...) {
-    
+getNeighborsEvaluation <-
+  function(attributes, neighbors, evaluationFunction, ...) {
+
     if (!require(foreach))
       stop("Please install foreach: install.packages('foreach')")
-    
+
     neighborsEvaluations <-
       foreach(n = neighbors,
               .combine = "c") %dopar% {
-                evaluationFunction(n, ...)
+                subsetIndexes <- as.logical(n)
+                subset <- attributes[subsetIndexes]
+                evaluationFunction(subset, ...)
               }
-    
+
     return(neighborsEvaluations)
   }

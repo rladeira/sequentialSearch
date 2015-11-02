@@ -1,0 +1,8 @@
+Package: sequentialSearch
+Title: sequential Search functions for R
+Version: 0.0.0.9000
+Authors@R: person("Rafael", "Ladeira", email = "rwladeira@gmail.com", role = c("aut", "cre"))
+Description: An R package containing some greedy sequential search methods, namely: SFS, SBE, SFFS and SFBE.
+Depends: R (>= 3.2.2)
+License: MIT
+LazyData: true

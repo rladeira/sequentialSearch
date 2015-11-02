@@ -4,6 +4,7 @@ sequentialSearch <-
            evaluationFunction,
            type = c("SFS", "SBE"),
            verbose = TRUE,
+           traceExecution = TRUE,
            isHigherBetter = TRUE,
            ...) {
 
@@ -19,24 +20,30 @@ sequentialSearch <-
     else # type == "SBE"
       currentAttrEncoding <- rep(1, length(attributes))
 
-    trace <- list()
-    traceIndex <- 1
+    if (traceExecution) {
+      trace <- list()
+      traceIndex <- 1
+    }
 
     initialAttrSubset <- attributes[as.logical(currentAttrEncoding)]
     bestScoreSoFar <- evaluationFunction(initialAttrSubset, ...)
 
     while (TRUE) {
 
-      if (verbose)
-        message("Iteration: ", traceIndex,
-                " | Encoding: ", paste(currentAttrEncoding, collapse = ""),
-                " | Optimization Value: ", bestScoreSoFar)
+      if (traceExecution) {
 
-      trace[[traceIndex]] <-
-        list(attrEncoding = currentAttrEncoding,
-             optimizationValue = bestScoreSoFar)
+        if (verbose) {
+          message("Iteration: ", traceIndex,
+                  " | Encoding: ", paste(currentAttrEncoding, collapse = ""),
+                  " | Optimization Value: ", bestScoreSoFar)
+        }
 
-      traceIndex <- traceIndex + 1
+        trace[[traceIndex]] <-
+          list(attrEncoding = currentAttrEncoding,
+               optimizationValue = bestScoreSoFar)
+
+        traceIndex <- traceIndex + 1
+      }
 
       stepResult <-
         sequentialSearchStep(
@@ -48,9 +55,12 @@ sequentialSearch <-
         solution <-
           attributes[as.logical(stepResult$finalAttrEncoding)]
 
-        return(list(
-          solution = solution,
-          trace = trace))
+        if (traceExecution)
+          return(list(
+            solution = solution,
+            trace = trace))
+        else
+          return(solution)
       }
 
       currentAttrEncoding <- stepResult$nextAttrEncoding

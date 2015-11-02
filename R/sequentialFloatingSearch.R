@@ -3,6 +3,7 @@ sequentialFloatingSearch <-
   function(attributes,
            evaluationFunction,
            type = c("SFFS", "SFBE"),
+           traceExecution = TRUE,
            verbose = TRUE,
            isHigherBetter = TRUE,
            ...) {
@@ -29,9 +30,11 @@ sequentialFloatingSearch <-
         createSequentialSearchStepFunc(type = "SFS")
     }
 
-    trace <- list()
-    iteration <- 1
-    traceIndex <- 1
+    if (traceExecution) {
+      trace <- list()
+      iteration <- 1
+      traceIndex <- 1
+    }
 
     initialAttrSubset <- attributes[as.logical(currentAttrEncoding)]
     bestScoreSoFar <- evaluationFunction(initialAttrSubset, ...)
@@ -40,18 +43,20 @@ sequentialFloatingSearch <-
 
       # ------------ Step 1: Inclusion -------------------------
 
-      if (verbose)
-        message("Iteration: ", iteration,
-                "\n             Inclusion Step ",
-                " | Start Encoding: ", paste(currentAttrEncoding, collapse = ""),
-                " | Optimization Value: ", bestScoreSoFar)
+      if (traceExecution) {
+        if (verbose)
+          message("Iteration: ", iteration,
+                  "\n             Inclusion Step ",
+                  " | Start Encoding: ", paste(currentAttrEncoding, collapse = ""),
+                  " | Optimization Value: ", bestScoreSoFar)
 
-      trace[[traceIndex]] <-
-        list(attrEncoding = currentAttrEncoding,
-             optimizationValue = bestScoreSoFar)
+        trace[[traceIndex]] <-
+          list(attrEncoding = currentAttrEncoding,
+               optimizationValue = bestScoreSoFar)
 
-      iteration <- iteration + 1
-      traceIndex <- traceIndex + 1
+        iteration <- iteration + 1
+        traceIndex <- traceIndex + 1
+      }
 
       inclusionStepResult <-
         inclusionStep(
@@ -68,9 +73,12 @@ sequentialFloatingSearch <-
         indexes <- as.logical(inclusionStepResult$finalAttrEncoding)
         solution <- attributes[indexes]
 
-        return(list(
-          solution = solution,
-          trace = trace))
+        if (traceExecution)
+          return(list(
+            solution = solution,
+            trace = trace))
+        else
+          return(solution)
       }
 
       currentAttrEncoding <- inclusionStepResult$nextAttrEncoding
@@ -78,17 +86,19 @@ sequentialFloatingSearch <-
 
       # ------------ Step 2: Conditional Exclusion ---------------
 
-      if (verbose)
-        message(" Conditional Exclusion Step ",
-                " | Start Encoding: ", paste(currentAttrEncoding, collapse = ""),
-                " | Optimization Value: ", bestScoreSoFar,
-                "\n-----------------------------------------------------------------------------")
+      if (traceExecution) {
+        if (verbose)
+          message(" Conditional Exclusion Step ",
+                  " | Start Encoding: ", paste(currentAttrEncoding, collapse = ""),
+                  " | Optimization Value: ", bestScoreSoFar,
+                  "\n-----------------------------------------------------------------------------")
 
-      trace[[traceIndex]] <-
-        list(attrEncoding = currentAttrEncoding,
-             optimizationValue = bestScoreSoFar)
+        trace[[traceIndex]] <-
+          list(attrEncoding = currentAttrEncoding,
+               optimizationValue = bestScoreSoFar)
 
-      traceIndex <- traceIndex + 1
+        traceIndex <- traceIndex + 1
+      }
 
       exclusionStepResult <-
         exclusionStep(

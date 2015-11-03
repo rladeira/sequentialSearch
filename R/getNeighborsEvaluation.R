@@ -11,7 +11,7 @@ getNeighborsEvaluation <-
     neighborsEvaluations <-
       foreach(n = neighbors,
               .combine = "c"
-      ) %do% {
+      ) %dopar% {
 
         subsetIndexes <- as.logical(n)
         subset <- attributes[subsetIndexes]

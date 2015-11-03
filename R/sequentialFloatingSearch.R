@@ -3,63 +3,60 @@ sequentialFloatingSearch <-
   function(attributes,
            evaluationFunction,
            type = c("SFFS", "SFBE"),
-           traceExecution = TRUE,
            verbose = TRUE,
            isHigherBetter = TRUE,
            ...) {
 
-    if(is.function(evaluationFunction) == FALSE)
+    if (is.function(evaluationFunction) == FALSE)
       stop("evaluationFunction must be a function.")
-    if(is.vector(attributes) == FALSE)
+    if (is.vector(attributes) == FALSE)
       stop("attributes must a vector.")
 
     type <- match.arg(type)
 
     if (type == "SFFS") {
       currentAttrEncoding <- rep(0, length(attributes))
-      inclusionStep <-
-        createSequentialSearchStepFunc(type = "SFS")
-      exclusionStep <-
-        createSequentialSearchStepFunc(type = "SBE")
+      firstStep <- createSequentialSearchStepFunc(type = "SFS")
+      firstStepDescription <- "Inclusion"
+      conditionalStep <- createSequentialSearchStepFunc(type = "SBE")
+      conditionalStepDescription <- "Exclusion"
     }
     else { # type == "SFBE"
       currentAttrEncoding <- rep(1, length(attributes))
-      inclusionStep <-
-        createSequentialSearchStepFunc(type = "SBE")
-      exclusionStep <-
-        createSequentialSearchStepFunc(type = "SFS")
+      firstStep <-  createSequentialSearchStepFunc(type = "SBE")
+      firstStepDescription <- "Exclusion"
+      conditionalStep <- createSequentialSearchStepFunc(type = "SFS")
+      conditionalStepDescription <- "Inclusion"
     }
 
-    if (traceExecution) {
-      trace <- list()
-      iteration <- 1
-      traceIndex <- 1
-    }
+    trace <- list()
+    iteration <- 1
+    traceIndex <- 1
 
     initialAttrSubset <- attributes[as.logical(currentAttrEncoding)]
     bestScoreSoFar <- evaluationFunction(initialAttrSubset, ...)
 
     while(TRUE) {
 
-      # ------------ Step 1: Inclusion -------------------------
+      # ----------------------- Step 1 ------------------------------
+      # ---------------- Inclusion for SFFS -------------------------
+      # ---------------- Exclusion for SFBE  -------------------------
 
-      if (traceExecution) {
-        if (verbose)
-          message("Iteration: ", iteration,
-                  "\n             Inclusion Step ",
-                  " | Start Encoding: ", paste(currentAttrEncoding, collapse = ""),
-                  " | Optimization Value: ", bestScoreSoFar)
+      if (verbose)
+        message("Iteration: ", iteration,
+                "\n             ",  firstStepDescription, " Step ",
+                " | Current Encoding: ", paste(currentAttrEncoding, collapse = ""),
+                " | Optimization Value: ", round(bestScoreSoFar, 4))
 
-        trace[[traceIndex]] <-
-          list(attrEncoding = currentAttrEncoding,
-               optimizationValue = bestScoreSoFar)
+      trace[[traceIndex]] <-
+        list(attrEncoding = currentAttrEncoding,
+             optimizationValue = bestScoreSoFar)
 
-        iteration <- iteration + 1
-        traceIndex <- traceIndex + 1
-      }
+      iteration <- iteration + 1
+      traceIndex <- traceIndex + 1
 
-      inclusionStepResult <-
-        inclusionStep(
+      firstStepResult <-
+        firstStep(
           attributes,
           currentAttrEncoding,
           bestScoreSoFar,
@@ -68,40 +65,37 @@ sequentialFloatingSearch <-
           isHigherBetter = isHigherBetter,
           ...)
 
-      if (inclusionStepResult$isFinalStep) {
+      if (firstStepResult$isFinalStep) {
 
-        indexes <- as.logical(inclusionStepResult$finalAttrEncoding)
+        indexes <- as.logical(firstStepResult$finalAttrEncoding)
         solution <- attributes[indexes]
 
-        if (traceExecution)
-          return(list(
-            solution = solution,
-            trace = trace))
-        else
-          return(solution)
+        return(list(
+          solution = solution,
+          trace = trace))
       }
 
-      currentAttrEncoding <- inclusionStepResult$nextAttrEncoding
-      bestScoreSoFar <- inclusionStepResult$bestScore
+      currentAttrEncoding <- firstStepResult$nextAttrEncoding
+      bestScoreSoFar <- firstStepResult$bestScore
 
-      # ------------ Step 2: Conditional Exclusion ---------------
+      # ----------------------- Step 2 ------------------------------
+      # ----------- Conditional Exclusion for SFFS -------------------------
+      # ----------- Conditional Inclusion for SFBE  -------------------------
 
-      if (traceExecution) {
-        if (verbose)
-          message(" Conditional Exclusion Step ",
-                  " | Start Encoding: ", paste(currentAttrEncoding, collapse = ""),
-                  " | Optimization Value: ", bestScoreSoFar,
-                  "\n-----------------------------------------------------------------------------")
+      if (verbose)
+        message(" Conditional ", conditionalStepDescription, " Step ",
+                " | Current Encoding: ", paste(currentAttrEncoding, collapse = ""),
+                " | Optimization Value: ", round(bestScoreSoFar, 4),
+                "\n-----------------------------------------------------------------------------")
 
-        trace[[traceIndex]] <-
-          list(attrEncoding = currentAttrEncoding,
-               optimizationValue = bestScoreSoFar)
+      trace[[traceIndex]] <-
+        list(attrEncoding = currentAttrEncoding,
+             optimizationValue = bestScoreSoFar)
 
-        traceIndex <- traceIndex + 1
-      }
+      traceIndex <- traceIndex + 1
 
-      exclusionStepResult <-
-        exclusionStep(
+      conditionalStepResult <-
+        conditionalStep(
           attributes,
           currentAttrEncoding,
           bestScoreSoFar,
@@ -110,12 +104,12 @@ sequentialFloatingSearch <-
           isHigherBetter = isHigherBetter,
           ...)
 
-      if (exclusionStepResult$bestScore < bestScoreSoFar ||
-          exclusionStepResult$isFinalStep)
+      if (conditionalStepResult$bestScore < bestScoreSoFar ||
+          conditionalStepResult$isFinalStep)
         next
 
-      bestScoreSoFar <- exclusionStepResult$bestScore
-      currentAttrEncoding <- exclusionStepResult$nextAttrEncoding
+      bestScoreSoFar <- conditionalStepResult$bestScore
+      currentAttrEncoding <- conditionalStepResult$nextAttrEncoding
     }
 
     stop("Should never reach this line...")

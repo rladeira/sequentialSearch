@@ -5,7 +5,6 @@ sequentialSearchStep <-
            bestScoreSoFar,
            evaluationFunction,
            type = c("SFS", "SBE"),
-           isHigherBetter = TRUE,
            ...) {
 
     type <- match.arg(type)

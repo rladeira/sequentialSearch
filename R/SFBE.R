@@ -1,19 +1,17 @@
 
 SFBE <- function(attributes,
-                 evaluationFunction, 
+                 evaluationFunction,
                  verbose = TRUE,
-                 isHigherBetter = TRUE,
                  ...) {
-  
+
   searchResult <-
     sequentialFloatingSearch(
       attributes = attributes,
-      evaluationFunction = evaluationFunction, 
+      evaluationFunction = evaluationFunction,
       type = "SFBE",
       verbose = verbose,
-      isHigherBetter = isHigherBetter,
       ...
     )
-  
+
   return(searchResult)
 }

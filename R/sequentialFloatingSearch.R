@@ -4,7 +4,6 @@ sequentialFloatingSearch <-
            evaluationFunction,
            type = c("SFFS", "SFBE"),
            verbose = TRUE,
-           isHigherBetter = TRUE,
            ...) {
 
     if (is.function(evaluationFunction) == FALSE)
@@ -61,8 +60,6 @@ sequentialFloatingSearch <-
           currentAttrEncoding,
           bestScoreSoFar,
           evaluationFunction,
-          verbose = verbose,
-          isHigherBetter = isHigherBetter,
           ...)
 
       if (firstStepResult$isFinalStep) {
@@ -100,8 +97,6 @@ sequentialFloatingSearch <-
           currentAttrEncoding,
           bestScoreSoFar,
           evaluationFunction,
-          verbose = verbose,
-          isHigherBetter = isHigherBetter,
           ...)
 
       if (conditionalStepResult$bestScore < bestScoreSoFar ||
@@ -121,18 +116,15 @@ createSequentialSearchStepFunc <-
     type <- match.arg(type)
 
     stepFunc <-
-      function(currentAttrEncoding, bestScoreSoFar,
+      function(currentAttrEncoding,
+               bestScoreSoFar,
                evaluationFunction,
-               verbose = verbose,
-               isHigherBetter = isHigherBetter,
                ...) {
 
         sequentialSearchStep(
           currentAttrEncoding, bestScoreSoFar,
           evaluationFunction,
           type = type,
-          verbose = verbose,
-          isHigherBetter = isHigherBetter,
           ...)
       }
 

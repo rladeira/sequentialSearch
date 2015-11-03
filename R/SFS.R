@@ -1,18 +1,16 @@
 
 SFS <- function(attributes,
-                evaluationFunction, 
+                evaluationFunction,
                 verbose = TRUE,
-                isHigherBetter = TRUE,
                 ...) {
-  
+
   searchResult <-
     sequentialSearch(
       attributes,
       evaluationFunction,
       type = "SFS",
       verbose = verbose,
-      isHigherBetter = isHigherBetter,
       ...)
-  
+
   return(searchResult)
 }

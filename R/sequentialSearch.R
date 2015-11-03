@@ -4,7 +4,6 @@ sequentialSearch <-
            evaluationFunction,
            type = c("SFS", "SBE"),
            verbose = TRUE,
-           isHigherBetter = TRUE,
            ...) {
 
     if (is.function(evaluationFunction) == FALSE)
@@ -42,7 +41,7 @@ sequentialSearch <-
         sequentialSearchStep(
           attributes, currentAttrEncoding,
           bestScoreSoFar, evaluationFunction,
-          type, verbose, isHigherBetter, ...)
+          type, ...)
 
       if (stepResult$isFinalStep) {
         solution <-

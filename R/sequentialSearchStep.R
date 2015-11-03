@@ -5,7 +5,6 @@ sequentialSearchStep <-
            bestScoreSoFar,
            evaluationFunction,
            type = c("SFS", "SBE"),
-           verbose = TRUE,
            isHigherBetter = TRUE,
            ...) {
 
@@ -29,29 +28,16 @@ sequentialSearchStep <-
         evaluationFunction, ...)
 
     # Test whether or not the current encoding is the best found.
-    if (isHigherBetter) {
 
-      bestNeighborEvaluation <- max(neighborsEvaluations)
-      bestNeighborIndex <- which.max(neighborsEvaluations)
+    bestNeighborEvaluation <- max(neighborsEvaluations)
+    bestNeighborIndex <- which.max(neighborsEvaluations)
 
-      if (bestScoreSoFar >= bestNeighborEvaluation)
-        return(list(
-          isFinalStep = TRUE,
-          bestScore = bestScoreSoFar,
-          finalAttrEncoding = currentAttrEncoding
-        ))
-    } else {
-
-      bestNeighborEvaluation <- min(neighborsEvaluations)
-      bestNeighborIndex <- which.min(neighborsEvaluations)
-
-      if (bestScoreSoFar <= bestNeighborEvaluation)
-        return(list(
-          isFinalStep = TRUE,
-          bestScore = bestScoreSoFar,
-          finalAttrEncoding = currentAttrEncoding
-        ))
-    }
+    if (bestScoreSoFar >= bestNeighborEvaluation)
+      return(list(
+        isFinalStep = TRUE,
+        bestScore = bestScoreSoFar,
+        finalAttrEncoding = currentAttrEncoding
+      ))
 
     # There's a better solution than the current.
     bestScoreSoFar <- bestNeighborEvaluation

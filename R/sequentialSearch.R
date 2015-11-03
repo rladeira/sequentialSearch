@@ -2,7 +2,7 @@
 sequentialSearch <-
   function(attributes,
            evaluationFunction,
-           type = c("SFS", "SBE"),
+           type = c("SFS", "SBS"),
            verbose = TRUE,
            ...) {
 
@@ -15,7 +15,7 @@ sequentialSearch <-
 
     if (type == "SFS")
       currentAttrEncoding <- rep(0, length(attributes))
-    else # type == "SBE"
+    else # type == "SBS"
       currentAttrEncoding <- rep(1, length(attributes))
 
     trace <- list()
@@ -40,20 +40,25 @@ sequentialSearch <-
       stepResult <-
         sequentialSearchStep(
           attributes, currentAttrEncoding,
-          bestScoreSoFar, evaluationFunction,
-          type, ...)
+          evaluationFunction, type, ...)
 
-      if (stepResult$isFinalStep) {
-        solution <-
-          attributes[as.logical(stepResult$finalAttrEncoding)]
+
+      # If there's no more neighbors to visit or the best
+      # score from the neighbors is not good enough, the
+      # current best solution is returned
+      if (length(stepResult$neighborsOrderedByScore) == 0 ||
+          bestScoreSoFar >= stepResult$orderedScores[1]) {
+
+        solution <- attributes[as.logical(currentAttrEncoding)]
 
         return(list(
           solution = solution,
           trace = trace))
       }
 
-      currentAttrEncoding <- stepResult$nextAttrEncoding
-      bestScoreSoFar <- stepResult$bestScore
+      # Update the current best solution
+      currentAttrEncoding <- stepResult$neighborsOrderedByScore[[1]]
+      bestScoreSoFar <- stepResult$orderedScores[1]
     }
 
     stop("Should never reach this line...")

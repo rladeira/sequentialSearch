@@ -1,5 +1,5 @@
 
-SBE <- function(attributes,
+SBS <- function(attributes,
                 evaluationFunction,
                 verbose = TRUE,
                 ...) {
@@ -8,7 +8,7 @@ SBE <- function(attributes,
     sequentialSearch(
       attributes,
       evaluationFunction,
-      type = "SBE",
+      type = "SBS",
       verbose = verbose,
       ...)
 

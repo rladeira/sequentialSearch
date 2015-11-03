@@ -2,7 +2,7 @@
 sequentialFloatingSearch <-
   function(attributes,
            evaluationFunction,
-           type = c("SFFS", "SFBE"),
+           type = c("SFFS", "SFBS"),
            verbose = TRUE,
            ...) {
 
@@ -17,12 +17,12 @@ sequentialFloatingSearch <-
       currentAttrEncoding <- rep(0, length(attributes))
       firstStep <- createSequentialSearchStepFunc(type = "SFS")
       firstStepDescription <- "Inclusion"
-      conditionalStep <- createSequentialSearchStepFunc(type = "SBE")
+      conditionalStep <- createSequentialSearchStepFunc(type = "SBS")
       conditionalStepDescription <- "Exclusion"
     }
-    else { # type == "SFBE"
+    else { # type == "SFBS"
       currentAttrEncoding <- rep(1, length(attributes))
-      firstStep <-  createSequentialSearchStepFunc(type = "SBE")
+      firstStep <-  createSequentialSearchStepFunc(type = "SBS")
       firstStepDescription <- "Exclusion"
       conditionalStep <- createSequentialSearchStepFunc(type = "SFS")
       conditionalStepDescription <- "Inclusion"
@@ -39,7 +39,7 @@ sequentialFloatingSearch <-
 
       # ----------------------- Step 1 ------------------------------
       # ---------------- Inclusion for SFFS -------------------------
-      # ---------------- Exclusion for SFBE  -------------------------
+      # ---------------- Exclusion for SFBS  -------------------------
 
       if (verbose)
         message("Iteration: ", iteration,
@@ -58,71 +58,87 @@ sequentialFloatingSearch <-
         firstStep(
           attributes,
           currentAttrEncoding,
-          bestScoreSoFar,
           evaluationFunction,
           ...)
 
-      if (firstStepResult$isFinalStep) {
+      # If there's no more neighbors to visit or the best
+      # score from the neighbors is not good enough, the
+      # current best solution is returned
+      if (length(firstStepResult$neighborsOrderedByScore) == 0 ||
+          bestScoreSoFar >= firstStepResult$orderedScores[1]) {
 
-        indexes <- as.logical(firstStepResult$finalAttrEncoding)
-        solution <- attributes[indexes]
+        solution <- attributes[as.logical(currentAttrEncoding)]
 
         return(list(
           solution = solution,
           trace = trace))
       }
 
-      currentAttrEncoding <- firstStepResult$nextAttrEncoding
-      bestScoreSoFar <- firstStepResult$bestScore
+      # Update the current best solution
+      currentAttrEncoding <- firstStepResult$neighborsOrderedByScore[[1]]
+      bestScoreSoFar <- firstStepResult$orderedScores[1]
 
-      # ----------------------- Step 2 ------------------------------
+      # ----------------------- Step 2 -------------------------------------
       # ----------- Conditional Exclusion for SFFS -------------------------
-      # ----------- Conditional Inclusion for SFBE  -------------------------
+      # ----------- Conditional Inclusion for SFBS  ------------------------
 
-      if (verbose)
-        message(" Conditional ", conditionalStepDescription, " Step ",
-                " | Current Encoding: ", paste(currentAttrEncoding, collapse = ""),
-                " | Optimization Value: ", round(bestScoreSoFar, 4),
-                "\n-----------------------------------------------------------------------------")
+      # loop which implements the backtracking behavior of the algorithm
+      while (TRUE) {
 
-      trace[[traceIndex]] <-
-        list(attrEncoding = currentAttrEncoding,
-             optimizationValue = bestScoreSoFar)
+        if (verbose)
+          message(" Conditional ", conditionalStepDescription, " Step ",
+                  " | Current Encoding: ", paste(currentAttrEncoding, collapse = ""),
+                  " | Optimization Value: ", round(bestScoreSoFar, 4),
+                  "\n-----------------------------------------------------------------------------")
 
-      traceIndex <- traceIndex + 1
+        trace[[traceIndex]] <-
+          list(attrEncoding = currentAttrEncoding,
+               optimizationValue = bestScoreSoFar)
 
-      conditionalStepResult <-
-        conditionalStep(
-          attributes,
-          currentAttrEncoding,
-          bestScoreSoFar,
-          evaluationFunction,
-          ...)
+        traceIndex <- traceIndex + 1
 
-      if (conditionalStepResult$bestScore < bestScoreSoFar ||
-          conditionalStepResult$isFinalStep)
-        next
+        conditionalStepResult <-
+          conditionalStep(
+            attributes,
+            currentAttrEncoding,
+            evaluationFunction,
+            ...)
 
-      bestScoreSoFar <- conditionalStepResult$bestScore
-      currentAttrEncoding <- conditionalStepResult$nextAttrEncoding
+        # If there's no neighbors to evaluate, stop conditional step
+        if (length(conditionalStepResult$neighborsOrderedByScore) == 0)
+          break
+
+        # Extract best score from backtracked neighbors
+        bestBackwardScore <- conditionalStepResult$orderedScores[1]
+        bestBackwardNeighbor <- conditionalStepResult$neighborsOrderedByScore[1]
+
+        # If the best score from backtrack is worse than the current best,
+        # stop conditional step
+        if (bestScoreSoFar >= bestBackwardScore)
+          break
+
+        # Update the current best solution
+        currentAttrEncoding <-
+          conditionalStepResult$neighborsOrderedByScore[[1]]
+        bestScoreSoFar <- conditionalStepResult$orderedScores[1]
+      }
     }
 
     stop("Should never reach this line...")
   }
 
 createSequentialSearchStepFunc <-
-  function(type = c("SFS", "SBE")) {
+  function(type = c("SFS", "SBS")) {
 
     type <- match.arg(type)
 
     stepFunc <-
       function(currentAttrEncoding,
-               bestScoreSoFar,
                evaluationFunction,
                ...) {
 
         sequentialSearchStep(
-          currentAttrEncoding, bestScoreSoFar,
+          currentAttrEncoding,
           evaluationFunction,
           type = type,
           ...)

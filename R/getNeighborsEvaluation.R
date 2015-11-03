@@ -18,5 +18,8 @@ getNeighborsEvaluation <-
         evaluationFunction(subset, ...)
       }
 
+    if (is.null(neighborsEvaluations))
+      neighborsEvaluations <- numeric()
+
     return(neighborsEvaluations)
   }

@@ -1,5 +1,5 @@
 
-SFBE <- function(attributes,
+SFBS <- function(attributes,
                  evaluationFunction,
                  verbose = TRUE,
                  ...) {
@@ -8,7 +8,7 @@ SFBE <- function(attributes,
     sequentialFloatingSearch(
       attributes = attributes,
       evaluationFunction = evaluationFunction,
-      type = "SFBE",
+      type = "SFBS",
       verbose = verbose,
       ...
     )

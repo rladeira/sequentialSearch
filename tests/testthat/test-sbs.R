@@ -1,7 +1,7 @@
 
-context("SFBS")
+context("sbs")
 
-test_that("SFBS behaves as expected 1", {
+test_that("sbs behaves as expected 1", {
 
   dummyEvaluation <- function(attrEncoding, ...) {
     return(length(attrEncoding))
@@ -10,14 +10,14 @@ test_that("SFBS behaves as expected 1", {
   data <- iris[, -5]
   attributes <- colnames(data)
 
-  result <- SFBS(attributes = attributes,
-                 evaluationFunction = dummyEvaluation)
+  result <- sbs(attributes = attributes,
+                evaluationFunction = dummyEvaluation)
 
   expect_true(all.equal(result$solution, attributes))
   expect_true(length(result$trace) == 1)
 })
 
-test_that("SFBS behaves as expected 2", {
+test_that("sbs behaves as expected 2", {
 
   dummyEvaluationNegative <- function(attrEncoding, ...) {
     return(-1 * length(attrEncoding))
@@ -26,14 +26,14 @@ test_that("SFBS behaves as expected 2", {
   data <- iris[, -5]
   attributes <- colnames(data)
 
-  result <- SFBS(attributes = attributes,
-                 evaluationFunction = dummyEvaluationNegative)
+  result <- sbs(attributes = attributes,
+                evaluationFunction = dummyEvaluationNegative)
 
   expect_true(length(result$solution) == 0)
-  expect_true(length(result$trace) == 2*length(attributes) + 1)
+  expect_true(length(result$trace) == length(attributes) + 1)
 })
 
-test_that("SFBS behaves as expected 3", {
+test_that("sbs behaves as expected 3", {
 
   require(rDatasets)
   require(clusterCrit)
@@ -54,12 +54,13 @@ test_that("SFBS behaves as expected 3", {
 
   attributes <- colnames(iris_$X)
 
-  result <- SFBS(attributes = attributes,
-                 evaluationFunction = evalFunc,
-                 dataset = iris_)
+  result <- sbs(attributes = attributes,
+                evaluationFunction = evalFunc,
+                dataset = iris_)
 
   expectedSolutionSize <-
-    length(attributes) - (length(result$trace) - 1)/2
+    length(attributes) - length(result$trace) + 1
 
   expect_true(length(result$solution) == expectedSolutionSize)
 })
+

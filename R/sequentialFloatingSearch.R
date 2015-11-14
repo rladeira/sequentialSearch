@@ -13,6 +13,7 @@ sequentialFloatingSearch <- function(attributes,
 
   type <- match.arg(type)
 
+  ## Starts with the empty set of attributes
   if (type == "sffs") {
     currentAttrEncoding <- rep(0, length(attributes))
     firstStep <- createSequentialSearchStepFunc(type = "sfs")
@@ -20,6 +21,7 @@ sequentialFloatingSearch <- function(attributes,
     conditionalStep <- createSequentialSearchStepFunc(type = "sbs")
     conditionalStepDescription <- "Exclusion"
   }
+  ## Starts with the full set of attributes
   else { # type == "sfbs"
     currentAttrEncoding <- rep(1, length(attributes))
     firstStep <-  createSequentialSearchStepFunc(type = "sbs")

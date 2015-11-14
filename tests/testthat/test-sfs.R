@@ -11,7 +11,8 @@ test_that("sfs behaves as expected 1", {
   attributes <- colnames(data)
 
   result <- sfs(attributes = attributes,
-                evaluationFunction = dummyEvaluation)
+                evaluationFunction = dummyEvaluation,
+                allowParallel = FALSE)
 
   expect_true(all.equal(result$solution, attributes))
   expect_true(length(result$trace) == length(attributes) + 1)

@@ -37,10 +37,9 @@ sequentialSearch <- function(attributes,
 
     traceIndex <- traceIndex + 1
 
-    stepResult <-
-      sequentialSearchStep(
-        attributes, currentAttrEncoding,
-        evaluationFunction, type, ...)
+    stepResult <- sequentialSearchStep(
+      attributes, currentAttrEncoding,
+      evaluationFunction, type, allowParallel, ...)
 
 
     # If there's no more neighbors to visit or the best
